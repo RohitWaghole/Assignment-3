@@ -8,12 +8,14 @@ var database;
 
 app.use(express.json());
 
+// DEFAULT PAGE
 app.get("/", (request, response) => {
   response.send(
     '<h1><a href="http://localhost:3000/customers"/>Customers</h1>'
   );
 });
 
+// GET ALL THE CUSTOMERS
 app.get("/customers", (request, response) => {
   database
     .collection("customer")
@@ -24,6 +26,7 @@ app.get("/customers", (request, response) => {
     });
 });
 
+// GET CUSTOMERS BY FIRST NAME
 app.get("/customers/:firstName", (request, response) => {
   database
     .collection("customer")
@@ -34,6 +37,7 @@ app.get("/customers/:firstName", (request, response) => {
     });
 });
 
+// GET CUSTOMERS BY ID
 app.get("/customers_id/:id", (request, response) => {
   database
     .collection("customer")
