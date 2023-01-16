@@ -2,6 +2,7 @@ const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+var ObjectId = require("mongodb").ObjectId;
 
 const app = express();
 
@@ -53,8 +54,6 @@ app.get("/", (request, response) => {
  *          Product:
  *              type : object
  *              properties:
- *                  id:
- *                      type: integer
  *                  product:
  *                      type: string
  *                  price:
@@ -126,17 +125,17 @@ app.get("/products/:product", (request, response) => {
 
 /**
  * @swagger
- * /products_id/{id}:
+ * /products_id/{_id}:
  *  get:
  *      summary: Getting product by product id
  *      description: Get the product by writing down the id of it
  *      parameters:
  *          - in: path
- *            name : id
+ *            name : _id
  *            required: true
- *            description: Numeric ID required
+ *            description: ID required
  *            schema:
- *              type: integer
+ *              type: string
  *      responses:
  *        2013:
  *              description: Fetch the data from MongoDB
@@ -150,11 +149,12 @@ app.get("/products/:product", (request, response) => {
  */
 
 // GET PRODUCTS BY PRODUCT ID
-app.get("/products_id/:id", (request, response) => {
+app.get("/products_id/:_id", async (request, response) => {
   database
     .collection("products")
-    .find({ id: parseInt(request.params.id) })
+    .find({ _id: ObjectId(request.params._id) })
     .toArray((err, result) => {
+      console.log(result);
       if (err) throw err;
       response.send(result);
     });
@@ -179,19 +179,13 @@ app.get("/products_id/:id", (request, response) => {
 
 // ADD/CREATE NEW PRODUCTS
 app.post("/products/addproduct", (request, response) => {
-  let res = database.collection("products").find({}).sort({ id: -1 }).limit(1);
-  res.forEach((obj) => {
-    if (obj) {
-      let data = {
-        id: obj.id + 1,
-        product: request.body.product,
-        price: request.body.price,
-      };
-      database.collection("products").insertOne(data, (err, result) => {
-        if (err) throw err;
-        response.send(data);
-      });
-    }
+  let data = {
+    product: request.body.product,
+    price: request.body.price,
+  };
+  database.collection("products").insertOne(data, (err, result) => {
+    if (err) throw err;
+    response.send(data);
   });
 });
 
@@ -207,7 +201,7 @@ app.post("/products/addproduct", (request, response) => {
  *            required: true
  *            description: Numeric ID required
  *            schema:
- *              type: integer
+ *              type: string
  *      requestBody:
  *          required: true
  *          content:
@@ -226,10 +220,9 @@ app.post("/products/addproduct", (request, response) => {
  */
 
 // UPDATE THE PRODUCT
-app.put("/products/:id", (request, response) => {
-  let query = { id: parseInt(request.params.id) };
+app.put("/products/:_id", (request, response) => {
+  let query = { _id: ObjectId(request.params._id) };
   let data = {
-    id: parseInt(request.params.id),
     product: request.body.product,
     price: request.body.price,
   };
@@ -252,17 +245,17 @@ app.put("/products/:id", (request, response) => {
  *          - in: path
  *            name : id
  *            required: true
- *            description: Numeric ID required
+ *            description: ID required
  *            schema:
- *              type: integer
+ *              type: string
  *      responses:
  *        2013:
  *              description: Deleted Successfully!
  */
 
 // DELETE THE PRODUCT
-app.delete("/products/:id", (request, response) => {
-  let query = { id: parseInt(request.params.id) };
+app.delete("/products/:_id", (request, response) => {
+  let query = { _id: ObjectId(request.params._id) };
   database.collection("products").deleteOne(query, (err, result) => {
     if (err) throw err;
     response.send("Delete Successfully!");
