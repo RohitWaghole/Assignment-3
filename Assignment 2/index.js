@@ -191,7 +191,7 @@ app.post("/products/addproduct", (request, response) => {
 
 /**
  * @swagger
- * /products/{id}:
+ * /products/{_id}:
  *  put:
  *      summary: Updating current products
  *      description: Updating the product in the MongoDB database
@@ -237,7 +237,7 @@ app.put("/products/:_id", (request, response) => {
 
 /**
  * @swagger
- * /products/{id}:
+ * /products/{_id}:
  *  delete:
  *      summary: Deleting current products
  *      description: Deleting the product in the MongoDB database
